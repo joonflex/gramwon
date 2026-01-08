@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mygramwon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mygramwon
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - AUTH_ID=${AUTH_ID}
+      - AUTH_PASSWORD=${AUTH_PASSWORD}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID}
+      - NODE_ENV=production
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
