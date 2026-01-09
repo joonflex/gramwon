@@ -1,6 +1,36 @@
 version: '3.8'
 
 services:
+  main:
+    build:
+      context: ./main-app
+      dockerfile: Dockerfile
+    container_name: gramwon-main
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"  # localhost만 접근 가능
+    environment:
+      - NODE_ENV=production
+    security_opt:
+      - no-new-privileges:true  # 권한 상승 방지
+    read_only: true  # 읽기 전용 파일시스템
+    tmpfs:
+      - /tmp:noexec,nosuid,nodev,size=100m  # 임시 파일용
+      - /app/.next/cache:noexec,nosuid,nodev,size=500m
+    cap_drop:
+      - ALL  # 모든 Linux capabilities 제거
+    cap_add:
+      - NET_BIND_SERVICE  # 포트 바인딩만 허용
+    networks:
+      - internal
+    user: "nextjs"  # root가 아닌 nextjs 사용자로 실행
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   password:
     build:
       context: ./password-app
@@ -29,7 +59,7 @@ services:
       - NET_BIND_SERVICE  # 포트 바인딩만 허용
     networks:
       - internal
-    user: "node"  # root가 아닌 node 사용자로 실행
+    user: "nextjs"  # root가 아닌 nextjs 사용자로 실행
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
