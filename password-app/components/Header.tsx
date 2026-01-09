@@ -11,7 +11,7 @@ export default async function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background shadow-sm">
       <div className="container flex h-16 max-w-screen-2xl items-center px-6">
         <div className="flex items-center">
-          <Link href="/" className="flex items-center space-x-2 mr-8">
+          <Link href="/passwords/" className="flex items-center space-x-2 mr-8">
             <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">M</span>
             </div>
@@ -24,7 +24,7 @@ export default async function Header() {
             {isAuth ? (
               <>
                 <Button variant="default" size="sm" asChild className="gap-2">
-                  <Link href="/">
+                  <Link href="/passwords/">
                     <LayoutDashboard className="h-4 w-4" />
                     대시보드
                   </Link>
@@ -33,7 +33,7 @@ export default async function Header() {
               </>
             ) : (
               <Button variant="default" size="sm" asChild className="gap-2">
-                <Link href="/login">
+                <Link href="/passwords/login">
                   <LogIn className="h-4 w-4" />
                   로그인
                 </Link>
