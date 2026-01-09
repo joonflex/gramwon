@@ -3,8 +3,11 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const authCookie = request.cookies.get('auth');
-  const isLoginPage = request.nextUrl.pathname === '/login';
-  const isApiRoute = request.nextUrl.pathname.startsWith('/api');
+
+  // basePath를 제외한 실제 pathname 확인
+  const pathname = request.nextUrl.pathname.replace('/password', '');
+  const isLoginPage = pathname === '/login' || pathname === '';
+  const isApiRoute = pathname.startsWith('/api');
 
   // Allow API routes to pass through
   if (isApiRoute) {
@@ -13,17 +16,17 @@ export function middleware(request: NextRequest) {
 
   // If user is authenticated and trying to access login page, redirect to home
   if (authCookie?.value === 'true' && isLoginPage) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/password/', request.url));
   }
 
   // If user is not authenticated and trying to access protected pages, redirect to login
   if (!authCookie?.value && !isLoginPage) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/password/login', request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/password/:path*'],
 };
