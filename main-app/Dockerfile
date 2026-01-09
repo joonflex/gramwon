@@ -8,9 +8,9 @@ RUN apk update && apk upgrade --no-cache && \
 
 WORKDIR /app
 
-# package 파일 복사 및 의존성 설치
+# package 파일 복사 및 의존성 설치 (devDependencies 포함 - 빌드에 필요)
 COPY package.json package-lock.json* ./
-RUN npm ci --only=production --ignore-scripts && \
+RUN npm ci --ignore-scripts && \
     npm cache clean --force
 
 # Stage 2: Builder
