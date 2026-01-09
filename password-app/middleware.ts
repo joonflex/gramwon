@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
 
   // basePath를 제외한 실제 pathname 확인
   const pathname = request.nextUrl.pathname.replace('/passwords', '');
-  const isLoginPage = pathname === '/login' || pathname === '';
+  const isLoginPage = pathname === '/login';
   const isApiRoute = pathname.startsWith('/api');
 
   // Allow API routes to pass through
