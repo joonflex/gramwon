@@ -12,14 +12,14 @@ export default function Home() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
-          <Link
-            href="/password"
+          <a
+            href={process.env.NODE_ENV === 'production' ? '/passwords' : 'http://localhost:3001'}
             className="block p-8 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow"
           >
             <div className="text-4xl mb-4">🔐</div>
             <h2 className="text-2xl font-semibold mb-2">Password Manager</h2>
             <p className="text-gray-600">비밀번호 관리 시스템</p>
-          </Link>
+          </a>
 
           <div className="block p-8 bg-white rounded-lg shadow-lg opacity-50 cursor-not-allowed">
             <div className="text-4xl mb-4">📊</div>

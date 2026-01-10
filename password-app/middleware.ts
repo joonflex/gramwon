@@ -17,22 +17,22 @@ export function middleware(request: NextRequest) {
 
   // If user is authenticated and trying to access login page, redirect to home
   if (authCookie?.value === 'true' && isLoginPage) {
-    return NextResponse.redirect(new URL('/passwords/', request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   // If user is not authenticated and trying to access protected pages, redirect to login
   if (!authCookie?.value && !isLoginPage && !isRootPage) {
-    return NextResponse.redirect(new URL('/passwords/login', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   // If user is not authenticated and on root page, redirect to login
   if (!authCookie?.value && isRootPage) {
-    return NextResponse.redirect(new URL('/passwords/login', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/passwords/:path*'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

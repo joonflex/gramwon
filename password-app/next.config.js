@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  basePath: '/passwords',
+  basePath: process.env.NODE_ENV === 'production' ? '/passwords' : '',
   output: 'standalone',
   trailingSlash: false,
   skipTrailingSlashRedirect: true,
