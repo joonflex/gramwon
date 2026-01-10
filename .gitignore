@@ -48,3 +48,11 @@ coverage
 
 # Misc
 *.pem
+
+# Screenshots and temp files
+*.png
+*.jpg
+*.jpeg
+*.gif
+re.md
+nginx-config.txt
