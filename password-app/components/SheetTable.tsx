@@ -87,10 +87,18 @@ export default function SheetTable({ data }: SheetTableProps) {
   // URL인지 확인하는 함수
   const isUrl = (text: string) => {
     try {
-      return text.startsWith('http://') || text.startsWith('https://');
+      return text.startsWith('http://') || text.startsWith('https://') || text.startsWith('www.');
     } catch {
       return false;
     }
+  };
+
+  // URL에 http가 없으면 추가하는 함수
+  const getFullUrl = (url: string) => {
+    if (url.startsWith('www.')) {
+      return `https://${url}`;
+    }
+    return url;
   };
 
   return (
@@ -132,7 +140,7 @@ export default function SheetTable({ data }: SheetTableProps) {
                     </span>
                     <div className="flex items-center gap-2">
                       <a
-                        href={row[siteUrlIndex]}
+                        href={getFullUrl(row[siteUrlIndex])}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-blue-600 hover:underline truncate flex-1"
@@ -310,9 +318,31 @@ export default function SheetTable({ data }: SheetTableProps) {
                                   </Button>
                                 </div>
                               </>
+                            ) : cellIndex === 2 ? (
+                              // 3열 (아이디) - 복사 버튼 있음
+                              <>
+                                <span className="max-w-xs overflow-hidden text-ellipsis block">
+                                  {cell}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() =>
+                                    copyToClipboard(cell, rowIndex, cellIndex)
+                                  }
+                                >
+                                  {copied ? (
+                                    <Check className="h-3.5 w-3.5 text-green-600" />
+                                  ) : (
+                                    <Copy className="h-3.5 w-3.5" />
+                                  )}
+                                </Button>
+                              </>
                             ) : isUrl(cell) ? (
+                              // URL - 복사 버튼 없음
                               <a
-                                href={cell}
+                                href={getFullUrl(cell)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:underline max-w-xs overflow-hidden text-ellipsis block"
@@ -320,6 +350,7 @@ export default function SheetTable({ data }: SheetTableProps) {
                                 {cell}
                               </a>
                             ) : (
+                              // 나머지 열 - 복사 버튼 없음
                               <span className="max-w-xs overflow-hidden text-ellipsis block">
                                 {cell}
                               </span>

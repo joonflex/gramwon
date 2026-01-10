@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,10 +9,19 @@ import { Label } from '@/components/ui/label';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [callbackUrl, setCallbackUrl] = useState('/dashboard');
+
+  useEffect(() => {
+    const callback = searchParams.get('callbackUrl');
+    if (callback) {
+      setCallbackUrl(callback);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +40,7 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok) {
-        window.location.href = '/dashboard';
+        window.location.href = callbackUrl;
       } else {
         setError(data.message || '로그인 실패');
       }
@@ -48,7 +57,7 @@ export default function LoginPage() {
         <CardHeader className="space-y-1 pb-6 border-b">
           <div className="flex justify-center mb-4">
             <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">M</span>
+              <span className="text-primary-foreground font-bold text-xl">G</span>
             </div>
           </div>
           <CardTitle className="text-2xl font-bold text-center">관리자 로그인</CardTitle>

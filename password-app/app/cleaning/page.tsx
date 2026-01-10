@@ -1,22 +1,24 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
-import SheetTable from '@/components/SheetTable';
+import CleaningDesktopView from '@/components/desktop-views/CleaningDesktopView';
+import CleaningMobileView from '@/components/mobile-views/CleaningMobileView';
 import { fetchSheetData } from '@/lib/googleSheets';
 
 // 60초 캐싱 적용
 export const revalidate = 60;
 
-export default async function Home() {
+export default async function CleaningPage() {
   let sheetData = null;
   let error = null;
 
   try {
-    const sheetId = process.env.GOOGLE_SHEET_ID;
+    const sheetId = process.env.CLEANING_SHEET_ID;
 
     if (!sheetId) {
       error = 'Google Sheet ID가 설정되지 않았습니다';
     } else {
-      sheetData = await fetchSheetData(sheetId);
+      // gid=0 = 첫 번째 탭
+      sheetData = await fetchSheetData(sheetId, 0);
     }
   } catch (err) {
     error = '데이터를 불러오는 중 오류가 발생했습니다';
@@ -30,10 +32,10 @@ export default async function Home() {
         <div className="container max-w-7xl mx-auto px-6 py-6">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
-              패스워드 관리
+              청소 당번
             </h1>
             <p className="text-sm text-muted-foreground mt-1.5">
-              그램원 계정 및 패스워드 정보를 확인하고 관리합니다
+              그램원 청소 당번 일정을 확인하고 관리합니다
             </p>
           </div>
         </div>
@@ -67,7 +69,15 @@ export default async function Home() {
 
         {/* Data Table */}
         {!error && sheetData && (
-          <SheetTable data={sheetData} />
+          <>
+            {/* Desktop View */}
+            <div className="hidden md:block">
+              <CleaningDesktopView data={sheetData} />
+            </div>
+
+            {/* Mobile View */}
+            <CleaningMobileView data={sheetData} />
+          </>
         )}
 
         {/* Empty State */}

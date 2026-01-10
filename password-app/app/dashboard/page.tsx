@@ -29,35 +29,39 @@ export default function DashboardPage() {
             </Card>
           </Link>
 
-          {/* 식사 당번 (준비 중) */}
-          <Card className="opacity-50 cursor-not-allowed">
-            <CardHeader>
-              <div className="flex items-center space-x-3 mb-2">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Utensils className="h-6 w-6 text-green-600" />
+          {/* 식사 당번 */}
+          <Link href="/meals">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader>
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <Utensils className="h-6 w-6 text-green-600" />
+                  </div>
+                  <CardTitle>식사 당번</CardTitle>
                 </div>
-                <CardTitle>식사 당번</CardTitle>
-              </div>
-              <CardDescription>
-                준비 중입니다
-              </CardDescription>
-            </CardHeader>
-          </Card>
+                <CardDescription>
+                  그램원 식사 당번 일정 관리
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
 
-          {/* 청소 당번 (준비 중) */}
-          <Card className="opacity-50 cursor-not-allowed">
-            <CardHeader>
-              <div className="flex items-center space-x-3 mb-2">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Sparkles className="h-6 w-6 text-purple-600" />
+          {/* 청소 당번 */}
+          <Link href="/cleaning">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader>
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="p-2 bg-purple-100 rounded-lg">
+                    <Sparkles className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <CardTitle>청소 당번</CardTitle>
                 </div>
-                <CardTitle>청소 당번</CardTitle>
-              </div>
-              <CardDescription>
-                준비 중입니다
-              </CardDescription>
-            </CardHeader>
-          </Card>
+                <CardDescription>
+                  그램원 청소 당번 일정 관리
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
         </div>
       </div>
     </div>

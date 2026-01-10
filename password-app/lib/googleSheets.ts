@@ -6,11 +6,13 @@ export interface SheetData {
 /**
  * Google Sheets를 CSV 형식으로 public fetch
  * API Key 없이 공개된 시트를 읽어옵니다
+ * @param sheetId - Google Sheets ID
+ * @param gid - 탭 ID (기본값: 0 = 첫 번째 탭)
  */
-export async function fetchSheetData(sheetId: string): Promise<SheetData> {
+export async function fetchSheetData(sheetId: string, gid: number = 0): Promise<SheetData> {
   try {
     // Google Sheets CSV export URL
-    const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
+    const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
 
     const response = await fetch(csvUrl, {
       next: { revalidate: 60 }, // 60초마다 갱신 (캐싱 적용)
