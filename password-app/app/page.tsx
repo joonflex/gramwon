@@ -1,86 +1,118 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, AlertCircle } from 'lucide-react';
-import SheetTable from '@/components/SheetTable';
-import { fetchSheetData } from '@/lib/googleSheets';
+'use client';
 
-// 60초 캐싱 적용
-export const revalidate = 60;
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-export default async function Home() {
-  let sheetData = null;
-  let error = null;
+export default function LoginPage() {
+  const router = useRouter();
+  const [id, setId] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  try {
-    const sheetId = process.env.GOOGLE_SHEET_ID;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
 
-    if (!sheetId) {
-      error = 'Google Sheet ID가 설정되지 않았습니다';
-    } else {
-      sheetData = await fetchSheetData(sheetId);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        window.location.href = '/dashboard';
+      } else {
+        setError(data.message || '로그인 실패');
+      }
+    } catch (err) {
+      setError('오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err) {
-    error = '데이터를 불러오는 중 오류가 발생했습니다';
-    console.error('Sheet data fetch error:', err);
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-muted/20">
-      {/* Header Section */}
-      <div className="bg-background border-b">
-        <div className="container max-w-7xl mx-auto px-6 py-6">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              데이터 관리
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1.5">
-              Google Sheets 연동 데이터를 확인하고 관리합니다
-            </p>
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-muted/20 -mt-[50px]">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="space-y-1 pb-6 border-b">
+          <div className="flex justify-center mb-4">
+            <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-xl">M</span>
+            </div>
           </div>
-        </div>
-      </div>
+          <CardTitle className="text-2xl font-bold text-center">관리자 로그인</CardTitle>
+          <CardDescription className="text-center">
+            시스템 접근을 위해 인증이 필요합니다
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="id" className="text-sm font-medium">
+                아이디
+              </Label>
+              <Input
+                id="id"
+                type="text"
+                placeholder="아이디를 입력하세요"
+                value={id}
+                onChange={(e) => setId(e.target.value)}
+                required
+                disabled={isLoading}
+                className="h-11"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium">
+                비밀번호
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="비밀번호를 입력하세요"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={isLoading}
+                className="h-11"
+              />
+            </div>
 
-      {/* Main Content */}
-      <div className="container max-w-7xl mx-auto px-6 py-6">
-        {/* Status Banner */}
-        {!error && (
-          <Alert className="mb-6 border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950">
-            <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
-            <AlertTitle className="text-green-900 dark:text-green-100">연결됨</AlertTitle>
-            <AlertDescription className="text-green-800 dark:text-green-200">
-              Google Sheets와 정상적으로 연결되었습니다
-            </AlertDescription>
-          </Alert>
-        )}
+            {error && (
+              <div className="rounded-md bg-destructive/15 border border-destructive/30 p-3 text-sm text-destructive">
+                {error}
+              </div>
+            )}
 
-        {/* Error State */}
-        {error && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>데이터 로드 오류</AlertTitle>
-            <AlertDescription className="mt-2">
-              {error}
-              <br />
-              <span className="text-xs">관리자에게 문의하거나 페이지를 새로고침 해주세요.</span>
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Data Table */}
-        {!error && sheetData && (
-          <SheetTable data={sheetData} />
-        )}
-
-        {/* Empty State */}
-        {!error && !sheetData && (
-          <div className="flex flex-col items-center justify-center py-20 bg-background rounded-lg border border-dashed">
-            <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">데이터 없음</h3>
-            <p className="text-sm text-muted-foreground text-center max-w-md">
-              표시할 데이터가 없습니다. Google Sheets가 올바르게 설정되었는지 확인해주세요.
-            </p>
-          </div>
-        )}
-      </div>
+            <Button
+              type="submit"
+              className="w-full h-11 font-medium"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  로그인 중...
+                </span>
+              ) : '로그인'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
