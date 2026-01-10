@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const authCookie = request.cookies.get('auth');
+  const isAuthenticated = authCookie?.value === 'true';
 
   // basePath를 제외한 실제 pathname 확인
   const pathname = request.nextUrl.pathname.replace('/passwords', '');
@@ -16,17 +17,12 @@ export function middleware(request: NextRequest) {
   }
 
   // If user is authenticated and trying to access login page, redirect to home
-  if (authCookie?.value === 'true' && isLoginPage) {
+  if (isAuthenticated && isLoginPage) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
-  // If user is not authenticated and trying to access protected pages, redirect to login
-  if (!authCookie?.value && !isLoginPage && !isRootPage) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  // If user is not authenticated and on root page, redirect to login
-  if (!authCookie?.value && isRootPage) {
+  // If user is not authenticated, redirect to login (except already on login page)
+  if (!isAuthenticated && !isLoginPage) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
